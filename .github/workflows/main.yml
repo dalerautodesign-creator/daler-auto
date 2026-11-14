@@ -24,46 +24,50 @@ jobs:
           node-version: '22'
 
       - name: Capacitor paketlerini kur
-        run: |
-          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+        run: npm install
 
       - name: Web klasörünü hazırla
         run: |
           mkdir -p www
           echo '<html><body>DalerAuto</body></html>' > www/index.html
 
-      - name: Capacitor yapılandırmasını başlat
+      - name: Capacitor yapılandırmasını oluştur
         run: |
-          npx cap init DalerAuto com.daler.autodesign --web-dir www
-
-      - name: İnternet adresini ayarla
-        run: |
-          node -e "
-          const fs = require('fs');
-          const config = {
-            appId: 'com.daler.autodesign',
-            appName: 'DalerAuto',
-            webDir: 'www',
-            server: {
-              url: 'http://dalerauto.nfy.fyi/?i=1',
-              cleartext: true,
-              androidScheme: 'http'
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.daler.autodesign",
+            "appName": "DalerAuto",
+            "webDir": "www",
+            "backgroundColor": "#0069b3",
+            "server": {
+              "url": "http://dalerauto.nfy.fyi/?i=1",
+              "cleartext": true,
+              "androidScheme": "http"
+            },
+            "android": {
+              "allowMixedContent": true
             }
-          };
-          fs.writeFileSync('capacitor.config.json', JSON.stringify(config, null, 2));
-          "
+          }
+          EOF
 
-      - name: Yapılandırmayı kontrol et
+      - name: Yapılandırmayı doğrula
         run: |
+          echo "Proje dizini:"
           pwd
+          echo "Dosyalar:"
           ls -la
+          echo "Capacitor yapılandırması:"
           cat capacitor.config.json
+          node -e "const c=require('./capacitor.config.json'); if(!c.appId) process.exit(1); console.log('App ID:',c.appId)"
+
+      - name: Capacitor sürümünü kontrol et
+        run: npx cap --version
 
       - name: Android projesini oluştur
-        run: npx cap add android
+        run: npx cap add android --config capacitor.config.json
 
       - name: Capacitor senkronizasyonu
-        run: npx cap sync android
+        run: npx cap sync android --config capacitor.config.json
 
       - name: APK oluştur
         run: |
