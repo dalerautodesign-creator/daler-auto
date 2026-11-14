@@ -46,6 +46,15 @@ jobs:
           mkdir -p www
           echo '<html><body>DalerAuto</body></html>' > www/index.html
 
+      - name: Yapılandırmayı kontrol et
+        run: |
+          echo "Çalışma dizini:"
+          pwd
+          echo "Capacitor yapılandırma dosyaları:"
+          find . -maxdepth 4 -name "capacitor.config.*"
+          echo "Yapılandırma içeriği:"
+          cat capacitor.config.json
+
       - name: Android projesini oluştur
         run: npx cap add android
 
