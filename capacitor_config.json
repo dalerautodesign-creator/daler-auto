@@ -1,0 +1,7 @@
+{
+  "appId": "com.daler.autodesign",
+  "appName": "Daler Auto Design",
+  "webDir": "www",
+  "backgroundColor": "#0069b3",
+  "server": { "androidScheme": "https" }
+}
