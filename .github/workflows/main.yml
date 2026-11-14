@@ -12,7 +12,7 @@ jobs:
       - name: Projeyi indir
         uses: actions/checkout@v4
 
-      - name: Java 17 kur
+      - name: Java kur
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -21,10 +21,30 @@ jobs:
       - name: Node.js kur
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - name: Bağımlılıkları yükle
-        run: npm install
+      - name: Capacitor paketlerini kur
+        run: npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+
+      - name: Capacitor yapılandırmasını oluştur
+        run: |
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.daler.autodesign",
+            "appName": "DalerAuto",
+            "webDir": "www",
+            "server": {
+              "url": "http://dalerauto.nfy.fyi/?i=1",
+              "cleartext": true,
+              "androidScheme": "http"
+            }
+          }
+          EOF
+
+      - name: Web klasörünü hazırla
+        run: |
+          mkdir -p www
+          echo '<html><body>DalerAuto</body></html>' > www/index.html
 
       - name: Android projesini oluştur
         run: npx cap add android
@@ -38,7 +58,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: APK dosyasını hazırla
+      - name: APK dosyasını yükle
         uses: actions/upload-artifact@v4
         with:
           name: DalerAuto-APK
