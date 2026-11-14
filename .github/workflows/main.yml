@@ -1,0 +1,45 @@
+
+name: DalerAuto Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Projeyi indir
+        uses: actions/checkout@v4
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bağımlılıkları yükle
+        run: npm install
+
+      - name: Android projesini oluştur
+        run: npx cap add android
+
+      - name: Capacitor senkronizasyonu
+        run: npx cap sync android
+
+      - name: APK oluştur
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: APK dosyasını hazırla
+        uses: actions/upload-artifact@v4
+        with:
+          name: DalerAuto-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
