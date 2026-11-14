@@ -1,7 +1,15 @@
+
 {
   "appId": "com.daler.autodesign",
-  "appName": "Daler Auto Design",
+  "appName": "DalerAuto",
   "webDir": "www",
   "backgroundColor": "#0069b3",
-  "server": { "androidScheme": "https" }
+  "server": {
+    "url": "http://dalerauto.nfy.fyi/?i=1",
+    "cleartext": true,
+    "androidScheme": "http"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
 }
