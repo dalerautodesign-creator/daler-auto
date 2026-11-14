@@ -24,35 +24,39 @@ jobs:
           node-version: '22'
 
       - name: Capacitor paketlerini kur
-        run: npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-
-      - name: Capacitor yapılandırmasını oluştur
         run: |
-          cat > capacitor.config.json <<'EOF'
-          {
-            "appId": "com.daler.autodesign",
-            "appName": "DalerAuto",
-            "webDir": "www",
-            "server": {
-              "url": "http://dalerauto.nfy.fyi/?i=1",
-              "cleartext": true,
-              "androidScheme": "http"
-            }
-          }
-          EOF
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
 
       - name: Web klasörünü hazırla
         run: |
           mkdir -p www
           echo '<html><body>DalerAuto</body></html>' > www/index.html
 
+      - name: Capacitor yapılandırmasını başlat
+        run: |
+          npx cap init DalerAuto com.daler.autodesign --web-dir www
+
+      - name: İnternet adresini ayarla
+        run: |
+          node -e "
+          const fs = require('fs');
+          const config = {
+            appId: 'com.daler.autodesign',
+            appName: 'DalerAuto',
+            webDir: 'www',
+            server: {
+              url: 'http://dalerauto.nfy.fyi/?i=1',
+              cleartext: true,
+              androidScheme: 'http'
+            }
+          };
+          fs.writeFileSync('capacitor.config.json', JSON.stringify(config, null, 2));
+          "
+
       - name: Yapılandırmayı kontrol et
         run: |
-          echo "Çalışma dizini:"
           pwd
-          echo "Capacitor yapılandırma dosyaları:"
-          find . -maxdepth 4 -name "capacitor.config.*"
-          echo "Yapılandırma içeriği:"
+          ls -la
           cat capacitor.config.json
 
       - name: Android projesini oluştur
